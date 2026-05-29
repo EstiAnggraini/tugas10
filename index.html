@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factory Constructors - Dart Programming (Sesi 10)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background: #ffe4ec
+            color: #0f172a;
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Slide card style */
+        .slide-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .slide-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .slide-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 1.2rem 2rem;
+            color: white;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .slide-header h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .slide-header .slide-number {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+            font-family: monospace;
+        }
+
+        .slide-content {
+            padding: 2rem;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin: 1.2rem 0;
+            box-shadow: inset 0 0 0 1px #334155;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: #eef2ff;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.4rem;
+            font-size: 0.9rem;
+            color: #1e40af;
+        }
+
+        .inline-code {
+            background: #e2e8f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.4rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        ul, .text-list {
+            margin: 1rem 0 1rem 1.8rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin: 1.2rem 0 0.6rem 0;
+            color: #0f172a;
+            border-left: 4px solid #3b82f6;
+            padding-left: 0.8rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1rem 0 0.4rem;
+            color: #1e293b;
+        }
+
+        .badge {
+            background: #3b82f6;
+            color: white;
+            border-radius: 2rem;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .note {
+            background: #fef9c3;
+            border-left: 6px solid #eab308;
+            padding: 1rem;
+            border-radius: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        hr {
+            margin: 1.5rem 0;
+            border: none;
+            height: 1px;
+            background: #cbd5e1;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        @media (max-width: 680px) {
+            .slide-content {
+                padding: 1.2rem;
+            }
+            pre {
+                font-size: 0.7rem;
+                padding: 0.8rem;
+            }
+            .slide-header h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+         /* Tabel styling */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #e2e8f0;
+            padding: 1rem 1.2rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .comparison-table td:first-child,
+        .comparison-table th:first-child {
+            font-weight: 600;
+            background-color: #f8fafc;
+        }
+
+        .comparison-table tr:hover td {
+            background-color: #fef9c3;
+        }
+
+         /* BUTTON */
+    .btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 18px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #1e40af;
+    }
+
+         /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-content {
+      position: relative;
+      background: white;
+      width: 90%;
+      max-width: 900px;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .close {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      font-size: 22px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .close:hover {
+      color: #2563eb;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header informasi umum (mirip cover slide) -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>📘 Factory Constructors in Dart</h2>
+            <div class="slide-number">Sesi 10 | Durasi: 200 menit | Total Slide: 14+</div>
+        </div>
+        <div class="slide-content">
+            <p><strong>Topik:</strong> Factory Constructor, Singleton, Caching, Subclass Selection, Immutable Objects, Best Practices &amp; Latihan.</p>
+            <p>📌 <em>Materi lengkap dari slide 1 sampai 14 + praktik &amp; challenge.</em></p>
+        </div>
+    </div>
+
+    <!-- Review Sesi 9 – Extension Methods (Slide 1 asli: Page 2) -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>📌 Review Sesi 9 – Extension Methods</h2>
+            <div class="slide-number">Slide 1</div>
+        </div>
+        <div class="slide-content">
+            <ul>
+                <li><strong>Extension methods:</strong> menambah fungsi ke tipe yang ada.</li>
+                <li><strong>Sintaks:</strong> <code>extension Name on Type { ... }</code></li>
+                <li>Contoh: <code>'hello'.capitalize()</code></li>
+                <li>Contoh cepat:
+                    <pre>extension IntExt on int {  
+  bool get isEven => this % 2 == 0;  
+}</pre>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Pengantar Factory Constructors -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>🏭 Pengantar Factory Constructors</h2>
+            <div class="slide-number">Slide 2</div>
+        </div>
+        <div class="slide-content">
+            <ul>
+                <li>Apa itu? Constructor khusus yang <strong>tidak selalu membuat instance baru</strong>.</li>
+                <li>Keyword: <code>factory</code></li>
+                <li>Perbedaan dengan generative constructor:
+                    <ul><li><strong>Generative:</strong> Selalu membuat instance baru.</li>
+                    <li><strong>Factory:</strong> Bisa mengembalikan instance yang sudah ada, atau instance subclass.</li></ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Sintaks Factory Constructor -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>🔧 Sintaks Factory Constructor</h2>
+            <div class="slide-number">Slide 3</div>
+        </div>
+        <div class="slide-content">
+            <pre>
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                
+class Example {
+  // Private constructor agar tidak bisa dibuat dari luar
+  Example._();
+
+  // Factory constructor yang memanggil constructor private
+  factory Example.create() => Example._();
+
+  // Static method yang juga memanggil constructor private
+  static Example createStatic() => Example._();
+}
+
+void main() {
+  // Penggunaan factory constructor
+  var e1 = Example.create();        // Factory constructor
+  
+  // Penggunaan static method
+  var e2 = Example.createStatic();  // Static method
+  
+  // var e3 = Example(); // Error: constructor private (tidak bisa diakses)
+  
+  print('e1 dibuat melalui factory constructor: $e1');
+  print('e2 dibuat melalui static method: $e2');
+  print('Apakah e1 dan e2 instance yang sama? ${identical(e1, e2)}'); // false
+  
+  // Demonstrasi bahwa setiap pemanggilan membuat instance baru
+  var e3 = Example.create();
+  var e4 = Example.createStatic();
+  
+  print('e1 dan e3 berbeda? ${!identical(e1, e3)}'); // true - instance berbeda
+  print('e2 dan e4 berbeda? ${!identical(e2, e4)}'); // true - instance berbeda
+  print('e3 dan e4 berbeda? ${!identical(e3, e4)}'); // true - instance berbeda
+  
+  // Atau bisa juga pakai e4 untuk sesuatu yang bermakna
+  print('Total instances yang dibuat: 4 (e1, e2, e3, e4)');
+}</pre>
+        </div>
+         <button class="btn" onclick="openModal('e77c9b462c4e5f714d9265ec2be47732')">
+        Lihat Kode
+      </button>
+    </div>
+
+    <!-- Kasus 1 – Singleton Pattern -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>🎯 Kasus 1 – Singleton Pattern</h2>
+            <div class="slide-number">Slide 4</div>
+        </div>
+        <div class="slide-content">
+            <p>Singleton: Hanya <strong>satu instance</strong> sepanjang aplikasi.</p>
+            <pre>
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                  
+class DatabaseConnection {
+// Private constructor
+DatabaseConnection._internal() {
+print('Creating database connection...');
+}
+// Static instance
+static final DatabaseConnection _instance = DatabaseConnection._internal();
+// Factory constructor
+factory DatabaseConnection() {
+return _instance;
+}
+void connect() {
+print('Connected to database');
+}
+}
+void main() {
+// Penggunaan
+var db1 = DatabaseConnection();
+var db2 = DatabaseConnection();
+print(identical(db1, db2)); // true - instance yang sama
+db1.connect();
+db2.connect();
+}
+            </pre>
+        </div>
+          <button class="btn" onclick="openModal('a388b3f23b3233ec6549937ca47e7a7a')">
+        Lihat Kode
+      </button>
+    </div>
+
+    <!-- Kasus 2 – Caching / Object Pool (ConnectionPool) -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>🗄️ Kasus 2 – Caching / Connection Pool</h2>
+            <div class="slide-number">Slide 5</div>
+        </div>
+        <div class="slide-content">
+            <pre>
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                  
+  class ConnectionPool {
+  final String host;
+  final int port;
+  // Cache berdasarkan parameter
+  static final Map<String, ConnectionPool> _cache = {};
+  
+  // Private constructor
+  ConnectionPool._(this.host, this.port);
+  
+  // Factory dengan caching
+  factory ConnectionPool(String host, int port) {
+    var key = '$host:$port';
+    // Return dari cache jika ada
+    if (_cache.containsKey(key)) {
+      print('Returning cached connection for $key');
+      return _cache[key]!;
+    }
+    // Buat baru dan cache
+    print('Creating new connection for $key');
+    var connection = ConnectionPool._(host, port);
+    _cache[key] = connection;
+    return connection;
+  }
+  
+  void query(String sql) {
+    print('Executing: "$sql" on $host:$port');
+  }
+}
+
+void main() {
+  print('--- Creating conn1 (localhost:5432) ---');
+  var conn1 = ConnectionPool('localhost', 5432);
+  conn1.query('SELECT * FROM users;');
+  print('');
+  
+  print('--- Creating conn2 (localhost:5432 - should be cached) ---');
+  var conn2 = ConnectionPool('localhost', 5432); // Dari cache
+  conn2.query('INSERT INTO products (name) VALUES ("Laptop");');
+  print('');
+  
+  print('--- Creating conn3 (db.example.com:3306 - new connection) ---');
+  var conn3 = ConnectionPool('db.example.com', 3306); // Baru
+  conn3.query('UPDATE orders SET status="shipped" WHERE id=101;');
+  print('');
+  
+  // Demonstrate that conn1 and conn2 are the same instance
+  print('Are conn1 and conn2 the same instance? ${identical(conn1, conn2)}'); // true
+  
+  // Demonstrate that conn1 and conn3 are different instances
+  print('Are conn1 and conn3 the same instance? ${identical(conn1, conn3)}'); // false
+}
+            </pre>
+            <div class="note">✨ <strong>Output demonstrasi:</strong> koneksi yang sama untuk host:port yang sama, mengurangi overhead.</div>
+        </div>
+         <button class="btn" onclick="openModal('f6e5f743390a38895524f0b48c7f3784')">
+        Lihat Kode
+      </button>
+    </div>
+
+    <!-- Kasus 3 – Mengembalikan Subclass (Shape) -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>🔺 Kasus 3 – Mengembalikan Subclass (Shape Factory)</h2>
+            <div class="slide-number">Slide 6</div>
+        </div>
+        <div class="slide-content">
+            <pre>
+ // Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                    
+  abstract class Shape {
+  void draw();
+  
+  factory Shape(String type) {
+    switch (type) {
+      case 'circle':
+        return Circle();
+      case 'square':
+        return Square();
+      case 'triangle':
+        return Triangle();
+      case 'rectangle':
+        return Rectangle();
+      default:
+        throw ArgumentError("Unknown shape: $type");
+    }
+  }
+}
+
+class Circle implements Shape {
+  @override void draw() => print("Drawing circle");
+}
+class Square implements Shape {
+  @override void draw() => print("Drawing square");
+}
+class Triangle implements Shape {
+  @override void draw() => print("Drawing triangle");
+}
+class Rectangle implements Shape {
+  @override void draw() => print("Drawing rectangle");
+}
+
+void main() {
+  var circle = Shape('circle');
+  var square = Shape('square');
+  var rect = Shape('rectangle');
+  circle.draw();
+  square.draw();
+  rect.draw();
+  // Shape('pentagon'); // error
+}</pre>
+        </div>
+         <button class="btn" onclick="openModal('bb8b68f388c24fe153d70d45d3415f48')">
+        Lihat Kode
+      </button>
+    </div>
+
+    <!-- Praktik 1 - Factory untuk Configuration (Slide 7) -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>⚙️ Praktik 1 – Factory untuk Configuration</h2>
+            <div class="slide-number">Slide 7</div>
+        </div>
+        <div class="slide-content">
+            
+            <pre>
+ // Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                    
+  class AppConfig {
+  final String environment;
+  final String apiUrl;
+  final bool debugMode;
+  // Private constructors untuk setiap environment
+  AppConfig._development()
+    : environment = 'development',
+      apiUrl = 'http://localhost:3000',
+      debugMode = true;
+  AppConfig._production()
+    : environment = 'production',
+      apiUrl = 'https://api.example.com',
+      debugMode = false;
+  AppConfig._staging()
+    : environment = 'staging',
+      apiUrl = 'https://staging.example.com',
+      debugMode = true;
+  // Factory constructor
+  factory AppConfig.fromEnvironment(String env) {
+    switch (env.toLowerCase()) {
+      case 'dev':
+        return AppConfig._development();
+      case 'development':
+        return AppConfig._development();
+      case 'prod':
+        return AppConfig._production();
+      case 'production':
+        return AppConfig._production();
+      case 'stage':
+        return AppConfig._staging();
+      case 'staging':
+        return AppConfig._staging();
+      default:
+        throw ArgumentError('Unknown environment: $env');
+    }
+  }
+  void printConfig() {
+    print('Environment: $environment');
+    print('API URL: $apiUrl');
+    print('Debug: $debugMode');
+  }
+}
+void main() {
+  // Penggunaan
+  var devConfig = AppConfig.fromEnvironment('dev');
+  var prodConfig = AppConfig.fromEnvironment('prod');
+  var stageConfig = AppConfig.fromEnvironment('stage');
+  devConfig.printConfig();
+  prodConfig.printConfig();
+  stageConfig.printConfig();
+}
+            </pre>
+        </div>
+         <button class="btn" onclick="openModal('b7f253e0d6b0a505667b06bd425f8502')">
+        Lihat Kode
+      </button>
+    </div>
+
+
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>⚙️   Factory dengan Named Constructors</h2>
+            <div class="slide-number">Slide 8</div>
+        </div>
+        <div class="slide-content">
+            
+            <pre>
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                    
+class User {
+  final String id;
+  final String name;
+  final String email;
+  
+  User._({required this.id, required this.name, required this.email});
+  
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User._(
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+    );
+  }
+  
+  factory User.guest() {
+    return User._(
+      id: 'guest_${DateTime.now().millisecondsSinceEpoch}',
+      name: 'Guest',
+      email: 'guest@example.com',
+    );
+  }
+  
+  factory User.create(String name, String email) {
+    if (name.isEmpty) throw ArgumentError('Name cannot be empty');
+    if (!email.contains('@')) throw ArgumentError('Invalid email');
+    return User._(
+      id: 'user_${DateTime.now().millisecondsSinceEpoch}',
+      name: name,
+      email: email,
+    );
+  }
+  
+  @override
+  String toString() => 'User(id: $id, name: $name, email: $email)';
+}
+
+void main() {
+  final jsonUser = User.fromJson({'id': '123', 'name': 'Alice', 'email': 'alice@example.com'});
+  final guest = User.guest();
+  final newUser = User.create('Bob', 'bob@example.com');
+  
+  print('JSON User: $jsonUser');
+  print('Guest User: $guest');
+  print('New User: $newUser');
+}
+            </pre>
+        </div>
+          <button class="btn" onclick="openModal('b66fb88c84f347fc004bb620855f6f08')">
+        Lihat Kode
+      </button>
+    </div>
+
+ 
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>⚙️   Factory dengan Generic</h2>
+            <div class="slide-number">Slide 9</div>
+        </div>
+        <div class="slide-content">
+           
+            <pre>
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                 
+abstract class Response<T> {
+  final T? data;
+  final String? error;
+  
+  Response({this.data, this.error});
+  
+  // Factory untuk success
+  factory Response.success(T data) = SuccessResponse<T>;
+  
+  // Factory untuk error
+  factory Response.error(String error) = ErrorResponse<T>;
+}
+
+class SuccessResponse<T> extends Response<T> {
+  SuccessResponse(T data) : super(data: data);
+}
+
+class ErrorResponse<T> extends Response<T> {
+  ErrorResponse(String error) : super(error: error);
+}
+
+void main() {
+  // Dart bisa menginfer tipe data secara otomatis
+  final successResponse = Response.success(100);  // Otomatis Response<int>
+  final errorResponse = Response.error("Something went wrong");  // Otomatis Response<String>
+  
+  print('Success response data: ${successResponse.data}');
+  print('Error response error: ${errorResponse.error}');
+  
+  // Type checking
+  if (successResponse is SuccessResponse<int>) {
+    print('This is a SuccessResponse with int data');
+  }
+  
+  if (errorResponse is ErrorResponse<String>) {
+    print('This is an ErrorResponse with String error');
+  }
+  
+  // Menampilkan tipe data
+  print('\nRuntime types:');
+  print('successResponse type: ${successResponse.runtimeType}');
+  print('errorResponse type: ${errorResponse.runtimeType}');
+  
+  // Contoh tambahan
+  print('\n--- Additional Examples ---');
+  
+  final stringSuccess = Response.success("Hello World");
+  print('String success: ${stringSuccess.data}');
+  
+  final boolSuccess = Response.success(true);
+  print('Bool success: ${boolSuccess.data}');
+  
+  final doubleError = Response.error("Invalid number format");
+  print('Double error: ${doubleError.error}');
+}
+            </pre>
+        </div>
+       <button class="btn" onclick="openModal('e9bf020f4062df6f5999c47644d4ac1c')">
+        Lihat Kode
+      </button>
+    </div>
+
+
+    
+    
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>💳 Praktik 2 – Factory untuk Payment Methods</h2>
+            <div class="slide-number">Slide 10 (materi praktik)</div>
+        </div>
+        <div class="slide-content">
+            <pre>
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                  
+  abstract class PaymentMethod {
+  void pay(double amount);
+  
+  factory PaymentMethod(String type) {
+    switch (type.toLowerCase()) {
+      case 'creditcard':
+        return CreditCardPayment();
+      case 'paypal':
+        return PayPalPayment();
+      case 'banktransfer':
+        return BankTransferPayment();
+      case 'ewallet':
+        return EWalletPayment();
+      default:
+        throw ArgumentError('Unknown payment method: $type');
+    }
+  }
+}
+
+class CreditCardPayment implements PaymentMethod {
+  @override
+  void pay(double amount) {
+    print('Paying \$$amount with Credit Card');
+  }
+}
+
+class PayPalPayment implements PaymentMethod {
+  @override
+  void pay(double amount) {
+    print('Paying \$$amount with PayPal');
+  }
+}
+
+class BankTransferPayment implements PaymentMethod {
+  @override
+  void pay(double amount) {
+    print('Paying \$$amount with Bank Transfer');
+  }
+}
+
+class EWalletPayment implements PaymentMethod {
+  @override
+  void pay(double amount) {
+    print('Paying \$$amount with E-Wallet');
+  }
+}
+
+// Add the main function here
+void main() {
+  // Example usage
+  PaymentMethod creditCard = PaymentMethod('creditcard');
+  creditCard.pay(100.50);
+  
+  PaymentMethod paypal = PaymentMethod('paypal');
+  paypal.pay(75.25);
+  
+  PaymentMethod bankTransfer = PaymentMethod('banktransfer');
+  bankTransfer.pay(500.00);
+  
+  PaymentMethod ewallet = PaymentMethod('ewallet');
+  ewallet.pay(200.75);
+  
+  // This will throw an error
+  try {
+    PaymentMethod invalid = PaymentMethod('bitcoin');
+    invalid.pay(10);
+  } catch (e) {
+    print('Error: $e');
+  }
+}
+            </pre>
+        </div>
+        <button class="btn" onclick="openModal('26552a0c5c59d2cf32955f9160a2dc99')">
+        Lihat Kode
+      </button>
+    </div>
+
+ <div class="slide-content">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Factory Constructor</th>
+                        <th>Static Method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sintaks</td>
+                        <td><code class="inline-code">factory Class.name()</code></td>
+                        <td><code class="inline-code">static Class name()</code></td>
+                    </tr>
+                    <tr>
+                        <td>Return</td>
+                        <td>Harus instance Class/Subclass</td>
+                        <td>Bisa apa saja</td>
+                    </tr>
+                    <tr>
+                        <td>Usage</td>
+                        <td><code class="inline-code">Class obj = Class.create()</code></td>
+                        <td><code class="inline-code">Class obj = Class.create()</code></td>
+                    </tr>
+                    <tr>
+                        <td>Inheritance</td>
+                        <td>Diwarisi</td>
+                        <td>Tidak diwarisi</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline-code">this</code></td>
+                        <td>Tidak ada akses</td>
+                        <td>Tidak ada akses</td>
+                    </tr>
+                </tbody>
+            </table>
+      
+    <!-- Perbandingan: Factory Constructor vs Static Method (Slide tambahan) -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>🔄 Factory Constructor vs Static Method</h2>
+            <div class="slide-number">Slide 11 (perbandingan)</div>
+        </div>
+        <div class="slide-content">
+            <pre>
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                  
+  class Example {
+  Example._() {} // private constructor
+
+  // Konstruktor pabrik (Factory Constructor)
+  factory Example.create() => Example._();
+
+  // Metode statis (Static Method)
+  static Example createStatic() => Example._();
+}
+
+void main() {
+  var e1 = Example.create();       // konstruktor pabrik
+  var e2 = Example.createStatic(); // metode statis
+  print('e1: $e1, e2: $e2');
+  print(identical(e1, e2) ? "sama" : "berbeda instance");
+}</pre>
+         
+        </div>
+          <button class="btn" onclick="openModal('be6f2855af315b5d60b3b6e6fea01f74')">
+        Lihat Kode
+      </button>
+    </div>
+
+    <!-- Factory untuk Immutable Objects dengan Cache (Color) -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>🎨 Factory untuk Immutable Objects dengan Cache</h2>
+            <div class="slide-number">Slide 12</div>
+        </div>
+        <div class="slide-content">
+            <pre>
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A               
+  class Color {
+  final int red;
+  final int green;
+  final int blue;
+
+  static final Map<String, Color> _cache = {};
+
+  // Private constructor
+  Color._(this.red, this.green, this.blue);
+
+  // Factory dengan cache
+  factory Color.rgb(int red, int green, int blue) {
+    if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
+      throw ArgumentError('RGB values must be 0-255');
+    }
+    var key = '$red,$green,$blue';
+    if (!_cache.containsKey(key)) {
+      _cache[key] = Color._(red, green, blue);
+    }
+    return _cache[key]!;
+  }
+
+  // Named factories untuk warna umum
+  factory Color.red() => Color.rgb(255, 0, 0);
+  factory Color.green() => Color.rgb(0, 255, 0);
+  factory Color.blue() => Color.rgb(0, 0, 255);
+  factory Color.white() => Color.rgb(255, 255, 255);
+  factory Color.black() => Color.rgb(0, 0, 0);
+
+  @override
+  String toString() => 'Color($red, $green, $blue)';
+}
+
+void main() {
+  var red1 = Color.red();
+  var red2 = Color.rgb(255, 0, 0);
+  print(identical(red1, red2)); // true - instance sama
+  print(red1);
+  print(red2);
+}</pre>
+        </div>
+          <button class="btn" onclick="openModal('641378222a6580d6209cec5f48bd7125')">
+        Lihat Kode
+      </button>
+    </div>
+
+
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>Document Factory</h2>
+            <div class="slide-number">Slide 13</div>
+        </div>
+        <div class="slide-content">
+            <pre>
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A                
+ abstract class Document {
+  void render();
+  factory Document(String type, String content) {
+    switch (type.toLowerCase()) {
+      case 'pdf':
+        return PDFDocument(content);
+      case 'word':
+        return WordDocument(content);
+      case 'html':
+        return HTMLDocument(content);
+      case 'markdown':
+        return MarkdownDocument(content);
+      default:
+        return PlainTextDocument(content);
+    }
+  }
+}
+class PDFDocument implements Document {
+  final String content;
+  PDFDocument(this.content);
+  @override
+  void render() {
+    print('Rendering PDF: $content');
+  }
+}
+class WordDocument implements Document {
+  final String content;
+  WordDocument(this.content);
+  @override
+  void render() {
+    print('Rendering Word: $content');
+  }
+}
+class HTMLDocument implements Document {
+  final String content;
+  HTMLDocument(this.content);
+  @override
+  void render() {
+    print('Rendering HTML: $content');
+  }
+}
+class MarkdownDocument implements Document {
+  final String content;
+  MarkdownDocument(this.content);
+  @override
+  void render() {
+    print('Rendering Markdown: $content');
+  }
+}
+class PlainTextDocument implements Document {
+  final String content;
+  PlainTextDocument(this.content);
+  @override
+  void render() {
+    print('Rendering plain text: $content');
+  }
+}
+void main() {
+  // Contoh untuk pdf dan html
+  var doc1 = Document('pdf', 'Hello PDF');
+  var doc2 = Document('html', '<h1>Hello</h1>');
+  
+  doc1.render(); // Rendering PDF: Hello PDF
+  doc2.render(); // Rendering HTML: <h1>Hello</h1>
+  // Contoh  untuk markdown, word, dan default (plain text)
+  var doc3 = Document('markdown', '# This is a heading');
+  var doc4 = Document('word', 'This is a Word document content.');
+  var doc5 = Document('unknown type', 'This will be rendered as plain text.');
+  doc3.render(); // Rendering Markdown: # This is a heading
+  doc4.render(); // Rendering Word: This is a Word document content.
+  doc5.render(); // Rendering plain text: This will be rendered as plain text.
+}
+            </pre>
+        </div>
+         <button class="btn" onclick="openModal('732e75c6a1e35b6bc9179b4419fd8294')">
+        Lihat Kode
+      </button>
+    </div>
+
+
+
+     
+    <!-- Best Practices & Ringkasan -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>✅ Ringkasan & Best Practices</h2>
+            <div class="slide-number">Slide 15-16</div>
+        </div>
+        <div class="slide-content">
+            <h3>🎯 Poin Penting Factory Constructor</h3>
+            <ul>
+                <li><strong>Factory constructor:</strong> <code>factory class.name() { ... }</code></li>
+                <li>Bisa mengembalikan: instance yang ada (cache), subclass, atau instance baru.</li>
+                <li>Use cases: <strong>singleton, caching, object pooling, subclass selection, immutable objects pooling</strong>.</li>
+            </ul>
+            <h3>📌 Best Practices:</h3>
+            <ul>
+                <li><strong>Gunakan factory untuk:</strong> Object pooling/caching, Singleton pattern, Complex object creation, Subclass selection.</li>
+                <li><strong>Gunakan generative constructor untuk:</strong> Simple object creation, initialization lists, required parameters.</li>
+                <li><strong>Validasi:</strong> Lakukan validasi di factory sebelum membuat objek (contoh pada Color).</li>
+            </ul>
+            <div class="note">
+                ⚡ Factory constructor sangat berguna untuk mengendalikan pembuatan objek, menghemat memori, dan menyediakan API yang bersih.
+            </div>
+        </div>
+    </div>
+
+    <!-- Latihan & Challenge -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>🏋️ Challenge</h2>
+            <div class="slide-number"></div>
+        </div>
+        <div class="slide-content">
+            <h4>🚀 Challenge: AnimalFactory</h4>
+            <p>Buat <strong>AnimalFactory</strong> dengan:</p>
+            <ul>
+                <li>Factory method untuk membuat berbagai jenis hewan (misal: 'dog', 'cat', 'bird').</li>
+                <li>Cache untuk hewan dengan atribut sama (misal: Dog dengan nama "Rex" di-cache).</li>
+                <li>Validation untuk parameter (umur harus positif, nama tidak boleh kosong).</li>
+                <li>Subclass selection berdasarkan input (mengembalikan Dog, Cat, atau Bird).</li>
+            </ul>
+            <pre>
+               
+// Nama: Esti Anggraini
+// Nim: 251410031
+// Kelas: SI2A     
+// ==================== ABSTRACT CLASS ====================
+abstract class Animal {
+  String getName();
+  String getSound();
+  String getHabitat();
+  double getSpeed();
+  String getDiet();
+  
+  void displayInfo() {
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('🐾 Animal: ${getName()}');
+    print('🔊 Sound: ${getSound()}');
+    print('🏠 Habitat: ${getHabitat()}');
+    print('⚡ Speed: ${getSpeed().toStringAsFixed(1)} km/h');
+    print('🍽️  Diet: ${getDiet()}');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  }
+}
+
+// MAMMALS
+class Lion extends Animal {
+  @override String getName() => 'Lion';
+  @override String getSound() => 'Roar! 🦁';
+  @override String getHabitat() => 'Savanna';
+  @override double getSpeed() => 80.5;
+  @override String getDiet() => 'Carnivore';
+}
+
+class Elephant extends Animal {
+  @override String getName() => 'Elephant';
+  @override String getSound() => 'Trumpet! 🐘';
+  @override String getHabitat() => 'Grasslands & Forests';
+  @override double getSpeed() => 40.0;
+  @override String getDiet() => 'Herbivore';
+}
+
+class Tiger extends Animal {
+  @override String getName() => 'Tiger';
+  @override String getSound() => 'Growl! 🐯';
+  @override String getHabitat() => 'Jungle';
+  @override double getSpeed() => 65.0;
+  @override String getDiet() => 'Carnivore';
+}
+
+class Giraffe extends Animal {
+  @override String getName() => 'Giraffe';
+  @override String getSound() => 'Bleat! 🦒';
+  @override String getHabitat() => 'Savanna';
+  @override double getSpeed() => 60.0;
+  @override String getDiet() => 'Herbivore';
+}
+
+// BIRDS
+class Eagle extends Animal {
+  @override String getName() => 'Eagle';
+  @override String getSound() => 'Screech! 🦅';
+  @override String getHabitat() => 'Mountains & Cliffs';
+  @override double getSpeed() => 160.0;
+  @override String getDiet() => 'Carnivore';
+}
+
+class Penguin extends Animal {
+  @override String getName() => 'Penguin';
+  @override String getSound() => 'Honk! 🐧';
+  @override String getHabitat() => 'Antarctica';
+  @override double getSpeed() => 8.0;
+  @override String getDiet() => 'Carnivore (Fish)';
+}
+
+// REPTILES
+class Snake extends Animal {
+  @override String getName() => 'Snake';
+  @override String getSound() => 'Hiss! 🐍';
+  @override String getHabitat() => 'Various (Desert, Forest, Grassland)';
+  @override double getSpeed() => 20.0;
+  @override String getDiet() => 'Carnivore';
+}
+
+class Crocodile extends Animal {
+  @override String getName() => 'Crocodile';
+  @override String getSound() => 'Growl! 🐊';
+  @override String getHabitat() => 'Rivers & Lakes';
+  @override double getSpeed() => 35.0;
+  @override String getDiet() => 'Carnivore';
+}
+
+// AQUATIC
+class Dolphin extends Animal {
+  @override String getName() => 'Dolphin';
+  @override String getSound() => 'Click & Whistle! 🐬';
+  @override String getHabitat() => 'Oceans';
+  @override double getSpeed() => 60.0;
+  @override String getDiet() => 'Carnivore';
+}
+
+class Shark extends Animal {
+  @override String getName() => 'Shark';
+  @override String getSound() => 'Silent Hunter! 🦈';
+  @override String getHabitat() => 'Oceans';
+  @override double getSpeed() => 56.0;
+  @override String getDiet() => 'Carnivore';
+}
+
+// ==================== ANIMAL FACTORY ====================
+class AnimalFactory {
+  static final AnimalFactory _instance = AnimalFactory._internal();
+  final Map<String, Animal> _animalCache = {};
+  final List<String> _validAnimalTypes = [
+    'lion', 'elephant', 'tiger', 'giraffe', 
+    'eagle', 'penguin', 'snake', 'crocodile', 
+    'dolphin', 'shark'
+  ];
+  
+  int _cacheHits = 0;
+  int _cacheMisses = 0;
+  int _totalAnimalsCreated = 0;
+  
+  factory AnimalFactory() => _instance;
+  AnimalFactory._internal();
+  
+  String _validateAnimalType(String type) {
+    final normalizedType = type.toLowerCase().trim();
+    
+    if (normalizedType.isEmpty) {
+      throw ArgumentError('❌ Animal type cannot be empty!');
+    }
+    
+    if (!_validAnimalTypes.contains(normalizedType)) {
+      throw ArgumentError(
+        '❌ Invalid animal type: "$type"\n'
+        '   Supported types: ${_validAnimalTypes.join(", ")}'
+      );
+    }
+    
+    return normalizedType;
+  }
+  
+  Animal createAnimal(String type) {
+    print('\n🔍 Creating animal: "$type"');
+    
+    final validatedType = _validateAnimalType(type);
+    
+    // Check cache
+    if (_animalCache.containsKey(validatedType)) {
+      _cacheHits++;
+      print('✅ CACHE HIT! Returning cached ${validatedType.toUpperCase()}');
+      print('📊 Cache stats - Hits: $_cacheHits, Misses: $_cacheMisses');
+      return _animalCache[validatedType]!;
+    }
+    
+    // Create new animal
+    _cacheMisses++;
+    _totalAnimalsCreated++;
+    Animal animal;
+    
+    switch (validatedType) {
+      case 'lion': animal = Lion(); break;
+      case 'elephant': animal = Elephant(); break;
+      case 'tiger': animal = Tiger(); break;
+      case 'giraffe': animal = Giraffe(); break;
+      case 'eagle': animal = Eagle(); break;
+      case 'penguin': animal = Penguin(); break;
+      case 'snake': animal = Snake(); break;
+      case 'crocodile': animal = Crocodile(); break;
+      case 'dolphin': animal = Dolphin(); break;
+      case 'shark': animal = Shark(); break;
+      default: throw ArgumentError('❌ Unsupported animal type: $validatedType');
+    }
+    
+    _animalCache[validatedType] = animal;
+    print('🆕 CACHE MISS! Created new ${validatedType.toUpperCase()}');
+    print('📊 Cache stats - Hits: $_cacheHits, Misses: $_cacheMisses');
+    
+    return animal;
+  }
+  
+  void printCacheStats() {
+    print('\n╔════════════════════════════════════════════╗');
+    print('║        ANIMAL FACTORY STATISTICS          ║');
+    print('╠════════════════════════════════════════════╣');
+    print('║ Total animals created: ${_totalAnimalsCreated.toString().padLeft(12)} ║');
+    print('║ Cache size:            ${_animalCache.length.toString().padLeft(12)} ║');
+    print('║ Cache hits:            ${_cacheHits.toString().padLeft(12)} ║');
+    print('║ Cache misses:          ${_cacheMisses.toString().padLeft(12)} ║');
+    print('║ Hit ratio:             ${(_cacheHits / (_cacheHits + _cacheMisses) * 100).toStringAsFixed(1).padLeft(12)}% ║');
+    print('╚════════════════════════════════════════════╝\n');
+  }
+  
+  void clearCache() {
+    _animalCache.clear();
+    _cacheHits = 0;
+    _cacheMisses = 0;
+    print('\n🗑️  Animal cache cleared!');
+  }
+  
+  List<String> getSupportedAnimals() => List.unmodifiable(_validAnimalTypes);
+}
+
+// ==================== MAIN FUNCTION ====================
+void main() {
+  print('\n╔══════════════════════════════════════════════════════════════╗');
+  print('║              ANIMAL FACTORY DEMONSTRATION                    ║');
+  print('║     Factory Method + Caching + Validation + Subclass         ║');
+  print('╚══════════════════════════════════════════════════════════════╝');
+  
+  final animalFactory = AnimalFactory();
+  
+  // Test 1: Basic creation
+  print('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  print('🦁 TEST 1: BASIC ANIMAL CREATION');
+  print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  
+  final lion1 = animalFactory.createAnimal('lion');
+  lion1.displayInfo();
+  
+  final eagle1 = animalFactory.createAnimal('eagle');
+  eagle1.displayInfo();
+  
+  // Test 2: Cache mechanism
+  print('\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  print('💾 TEST 2: CACHE MECHANISM');
+  print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  
+  print('\nCreating LION again (should use cache):');
+  final lion2 = animalFactory.createAnimal('lion');
+  print('\n✓ Same instance? ${identical(lion1, lion2)}');
+  
+  // Test 3: Validation
+  print('\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  print('🔍 TEST 3: INPUT VALIDATION');
+  print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  
+  try {
+    animalFactory.createAnimal('dragon');
+  } catch (e) {
+    print('✓ Validation working: $e');
+  }
+  
+  // Test 4: Create all animals
+  print('\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  print('🎪 TEST 4: ALL SUPPORTED ANIMALS');
+  print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  
+  final supportedAnimals = animalFactory.getSupportedAnimals();
+  for (var type in supportedAnimals) {
+    final animal = animalFactory.createAnimal(type);
+    print('✓ ${animal.getName()} - ${animal.getSound()}');
+  }
+  
+  // Test 5: Statistics
+  print('\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  print('📊 TEST 5: FINAL STATISTICS');
+  print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  
+  animalFactory.printCacheStats();
+  
+  print('\n╔══════════════════════════════════════════════════════════════╗');
+  print('║                  DEMONSTRATION COMPLETE                       ║');
+  print('╚══════════════════════════════════════════════════════════════╝\n');
+}
+</pre>
+        </div>
+      <button class="btn" onclick="openModal('1b46e08c0455fd99562c20dd0bc28da3')">
+        Lihat Kode
+      </button>
+    </div>
+
+    <!-- Tambahan klarifikasi dari halaman yang rusak (raw text page 6 hingga 11 terintegrasi) semua informasi sudah diambil -->
+    <div class="slide-card">
+        <div class="slide-header">
+            <h2>📚 Catatan Tambahan dari Materi</h2>
+            <div class="slide-number">Ref: Lengkap</div>
+        </div>
+        <div class="slide-content">
+            <p>Semua konsep yang disajikan dalam file PDF asli telah diikutsertakan:</p>
+            <ul>
+                <li>Perbedaan factory vs generative constructor</li>
+                <li>Pola Singleton (<code>DatabaseConnection</code>)</li>
+                <li>Caching dengan Map (<code>ConnectionPool</code> dan <code>Color</code>)</li>
+                <li>Factory mengembalikan subclass (Shape, PaymentMethod)</li>
+                <li>Praktik Configuration Factory</li>
+                <li>Perbandingan factory constructor dengan static method</li>
+                <li>Best practices serta latihan/challenge untuk mempraktikkan.</li>
+            </ul>
+            <p>✨ <strong>Semua contoh kode sudah siap dijalankan di lingkungan Dart.</strong> Slide ini dapat digunakan sebagai referensi belajar Factory Constructor secara mendalam.</p>
+        </div>
+    </div>
+
+    <footer>
+        © Sesi 10 - Factory Constructors | Materi lengkap dari file slide-10.pdf | Siap deploy di GitHub Pages.
+    </footer>
+</div>
+
+
+     <!-- MODAL DINAMIS (Cukup Satu Saja) -->
+  <div id="dynamicModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <iframe id="modalIframe" src=""></iframe>
+    </div>
+  </div>
+
+  <script>
+    function openModal(gistId) {
+      const modal = document.getElementById("dynamicModal");
+      const iframe = document.getElementById("modalIframe");
+
+      // Load link secara otomatis saat diklik
+      iframe.src = `https://dartpad.dev/embed-dart.html?id=${gistId}&null_safety=true&run=true&theme=light`;
+      modal.style.display = "block";
+      document.body.style.overflow = "hidden"; // Biar ga bisa scroll saat modal buka
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("dynamicModal");
+      const iframe = document.getElementById("modalIframe");
+
+      modal.style.display = "none";
+      iframe.src = ""; // Bersihkan iframe biar ga berat
+      document.body.style.overflow = "auto";
+    }
+
+    // Klik di luar modal untuk tutup
+    window.onclick = function (event) {
+      const modal = document.getElementById("dynamicModal");
+      if (event.target == modal) closeModal();
+    }
+  </script>
+</div>
+      
+</body>
+</html>
